@@ -9,8 +9,6 @@ dotfiles:
 		ln -sfn $$file $(HOME)/$$f; \
 	done; \
 
-	ln -fn $(CURDIR)/gitignore $(HOME)/.gitignore;
-
 test: shellcheck
 
 # if this session isn't interactive, then we don't want to allocate a
