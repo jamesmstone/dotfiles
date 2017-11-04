@@ -1400,6 +1400,14 @@ node(){
         -w /app \
         node node "$@"
 }
+npx(){
+    docker run -it --rm \
+        -v /etc/localtime:/etc/localtime:ro \
+         --user="$(id -u):$(id -g)" \
+	-v $(pwd):/app \
+        -w /app \
+        node npx "$@"
+}
 npm(){
     docker run -it --rm \
         -v /etc/localtime:/etc/localtime:ro \
