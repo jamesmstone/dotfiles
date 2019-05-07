@@ -22,6 +22,3 @@ export QT_DEVICE_PIXEL_RATIO=2
 
 # turn on secure docker
 export DOCKER_CONTENT_TRUST=1
-
-# shortcut to current uni dir
-export sem="'$HOME/Uni/2016/Semester 2/'"
