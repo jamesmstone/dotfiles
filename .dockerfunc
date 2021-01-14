@@ -542,7 +542,7 @@ lpass(){
 	docker run --rm -it \
 		-v "${HOME}/.lpass:/root/.lpass" \
 		--name lpass \
-		${DOCKER_REPO_PREFIX}/lpass "$@"
+		jamesmstone/lpass "$@"
 }
 lynx(){
 	docker run --rm -it \
