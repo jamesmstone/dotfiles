@@ -1,0 +1,16 @@
+name: Update Alpine OS
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger webhook
+        env:
+          WEBHOOK_GITHUB_TOKEN: ${{ secrets.WEBHOOK_GITHUB_TOKEN }}
+        run: |
+          curl -H 'Authorization: token '${WEBHOOK_GITHUB_TOKEN} \
+              --request POST \
+              --data '{"event_type": "build"}' \
+              https://api.github.com/repos/jamesmstone/alpine-setup/dispatches
