@@ -1,6 +1,10 @@
-.PHONY: all bin dotfiles etc test shellcheck
+.PHONY: all bin dotfiles etc emacs test shellcheck
 
-all: dotfiles etc
+all: dotfiles etc emacs
+
+emacs:
+	git clone https://github.com/jamesmstone/.emacs.d.git ~/.emacs.d; \
+	git -C ~/.emacs.d/ remote set-url origin git@github.com:jamesmstone/.emacs.d.git; \
 
 dotfiles:
 	# add aliases for dotfiles
