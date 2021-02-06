@@ -100,7 +100,7 @@ dataurl() {
 
 # Start an HTTP server from a directory, optionally specifying the port
 server() {
-	open "http://172.17.0.1:${1:-8000}" && docker run -it --rm --name pythonServer \
+	open "http://172.17.0.1:${1:-8000}" && podman run -it --rm --name pythonServer \
 		-v "$PWD":/usr/src/myapp \
 		-w /usr/src/myapp \
 		-p ${1:-8000}:${1:-8000}\
