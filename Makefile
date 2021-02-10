@@ -1,6 +1,6 @@
 .PHONY: all bin dotfiles etc emacs test shellcheck
 
-all: dotfiles etc emacs
+all: dotfiles etc
 
 emacs:
 	git clone https://github.com/jamesmstone/.emacs.d.git ~/.emacs.d; \
