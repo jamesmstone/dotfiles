@@ -8,18 +8,18 @@ export DOCKER_REPO_PREFIX=r.j3ss.co
 #
 dcleanup(){
 	local containers
-	containers=( $(podman ps -aq 2>/dev/null) )
-	podman rm "${containers[@]}" 2>/dev/null
+	containers=( $(docker ps -aq 2>/dev/null) )
+	docker rm "${containers[@]}" 2>/dev/null
 	local volumes
-	volumes=( $(podman ps --filter status=exited -q 2>/dev/null) )
-	podman rm -v "${volumes[@]}" 2>/dev/null
+	volumes=( $(docker ps --filter status=exited -q 2>/dev/null) )
+	docker rm -v "${volumes[@]}" 2>/dev/null
 	local images
-	images=( $(podman images --filter dangling=true -q 2>/dev/null) )
-	podman rmi "${images[@]}" 2>/dev/null
+	images=( $(docker images --filter dangling=true -q 2>/dev/null) )
+	docker rmi "${images[@]}" 2>/dev/null
 }
 dupdate(){
 	# from http://stackoverflow.com/a/32310478/1432051
-	podman images | awk '/^REPOSITORY|\<none\>/ {next} {print $1}' | xargs -n 1 -P8 podman pull
+	docker images | awk '/^REPOSITORY|\<none\>/ {next} {print $1}' | xargs -n 1 -P8 docker pull
 }
 dcleandate(){
 	dupdate
@@ -28,16 +28,16 @@ dcleandate(){
 del_stopped(){
 	local name=$1
 	local state
-	state=$(podman inspect --format "{{.State.Running}}" "$name" 2>/dev/null)
+	state=$(docker inspect --format "{{.State.Running}}" "$name" 2>/dev/null)
 
 	if [[ "$state" == "false" ]]; then
-		podman rm "$name"
+		docker rm "$name"
 	fi
 }
 relies_on(){
 	for container in "$@"; do
 		local state
-		state=$(podman inspect --format "{{.State.Running}}" "$container" 2>/dev/null)
+		state=$(docker inspect --format "{{.State.Running}}" "$container" 2>/dev/null)
 
 		if [[ "$state" == "false" ]] || [[ "$state" == "" ]]; then
 			echo "$container is not running, starting it for you."
@@ -70,7 +70,7 @@ nginx_config(){
 	EOF
 
 	# restart nginx
-	podman restart nginx
+	docker restart nginx
 
 	# add host to /etc/hosts
 	hostess add "$server" 127.0.0.1
@@ -84,52 +84,52 @@ nginx_config(){
 #
 
 haskell(){
-	podman run -it --rm -v"$(pwd)":/haskell -w/haskell haskell "$@"
+	docker run -it --rm -v"$(pwd)":/haskell -w/haskell haskell "$@"
 }
 ghc(){
-	podman run -it --rm -v"$(pwd)":/haskell -w/haskell haskell ghc "$@"
+	docker run -it --rm -v"$(pwd)":/haskell -w/haskell haskell ghc "$@"
 }
 hlint(){
-	podman run -it --rm \
+	docker run -it --rm \
         -v "$(pwd)":/hlint \
         -w /hlint \
         jamesmstone/hlint "$@"
 }
 python(){
-	podman run -it --rm --name python \
+	docker run -it --rm --name python \
 		-v "$PWD":/usr/src/myapp \
 		-w /usr/src/myapp \
 		python:3 python "$@"
 }
 python2(){
-	podman run -it --rm --name python \
+	docker run -it --rm --name python \
 		-v "$PWD":/usr/src/myapp \
 		-w /usr/src/myapp \
 		python:2 python "$@"
 }
 
 java(){
-	podman run -it --rm -v "$(pwd)":/java -w /java java java "$@"
+	docker run -it --rm -v "$(pwd)":/java -w /java java java "$@"
 }
 
 javac(){
-	podman run -it --rm -v "$(pwd)":/java -w /java java javac "$@"
+	docker run -it --rm -v "$(pwd)":/java -w /java java javac "$@"
 }
 javadoc(){
-	podman run -it --rm -v "$(pwd)":/java -w /java java javadoc "$@"
+	docker run -it --rm -v "$(pwd)":/java -w /java java javadoc "$@"
 }
 latex(){
-	podman run --rm -i --user="$(id -u):$(id -g)" -v "$(pwd)":/data blang/latex "$@"
+	docker run --rm -i --user="$(id -u):$(id -g)" -v "$(pwd)":/data blang/latex "$@"
 }
 swipl(){
-	podman run --rm -it -v "$(pwd)":/source nacyot/prolog-swi:apt swipl "$@"
+	docker run --rm -it -v "$(pwd)":/source nacyot/prolog-swi:apt swipl "$@"
 }
 
 #
 # Container Aliases
 #
 apt_file(){
-	podman run --rm -it \
+	docker run --rm -it \
 		--name apt-file \
 		${DOCKER_REPO_PREFIX}/apt-file
 }
@@ -137,7 +137,7 @@ alias apt-file="apt_file"
 audacity(){
 	del_stopped audacity
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -148,14 +148,14 @@ audacity(){
 		${DOCKER_REPO_PREFIX}/audacity
 }
 aws(){
-	podman run -it --rm \
+	docker run -it --rm \
 		-v "${HOME}/.aws:/root/.aws" \
 		--log-driver none \
 		--name aws \
 		${DOCKER_REPO_PREFIX}/awscli "$@"
 }
 bees(){
-	podman run -it --rm \
+	docker run -it --rm \
 		-e NOTARY_TOKEN \
 		-v "${HOME}/.bees:/root/.bees" \
 		-v "${HOME}/.boto:/root/.boto" \
@@ -165,7 +165,7 @@ bees(){
 		${DOCKER_REPO_PREFIX}/beeswithmachineguns "$@"
 }
 cadvisor(){
-	podman run -d \
+	docker run -d \
 		--restart always \
 		-v /:/rootfs:ro \
 		-v /var/run:/var/run:rw \
@@ -175,13 +175,13 @@ cadvisor(){
 		--name cadvisor \
 		google/cadvisor
 
-	hostess add cadvisor "$(podman inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' cadvisor)"
+	hostess add cadvisor "$(docker inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' cadvisor)"
 	browser-exec "http://cadvisor:8080"
 }
 cheese(){
 	del_stopped cheese
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -209,7 +209,7 @@ chrome(){
 
 	# one day remove /etc/hosts bind mount when effing
 	# overlay support inotify, such bullshit
-	podman run -d \
+	docker run -d \
 		--memory 3gb \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -250,7 +250,7 @@ chromium(){
 
 	# one day remove /etc/hosts bind mount when effing
 	# overlay support inotify, such bullshit
-	podman run -d \
+	docker run -d \
 		--memory 3gb \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -279,7 +279,7 @@ chromium(){
 }
 
 cmd(){
-	podman run \
+	docker run \
 		-it \
 		--rm \
 		-v "$(pwd)":"$(pwd)"  \
@@ -292,13 +292,13 @@ consul(){
 
 	# check if we passed args and if consul is running
 	local state
-	state=$(podman inspect --format "{{.State.Running}}" consul 2>/dev/null)
+	state=$(docker inspect --format "{{.State.Running}}" consul 2>/dev/null)
 	if [[ "$state" == "true" ]] && [[ "$*" != "" ]]; then
-		podman exec -it consul consul "$@"
+		docker exec -it consul consul "$@"
 		return 0
 	fi
 
-	podman run -d \
+	docker run -d \
 		--restart always \
 		-v "${HOME}/.consul:/etc/consul.d" \
 		-v /var/run/docker.sock:/var/run/docker.sock \
@@ -309,42 +309,42 @@ consul(){
 		-bootstrap-expect 1 \
 		-config-dir /etc/consul.d \
 		-data-dir /data \
-		-encrypt "$(podman run --rm ${DOCKER_REPO_PREFIX}/consul keygen)" \
+		-encrypt "$(docker run --rm ${DOCKER_REPO_PREFIX}/consul keygen)" \
 		-ui-dir /usr/src/consul \
 		-server \
 		-dc neverland \
 		-bind 0.0.0.0
 
-	hostess add consul "$(podman inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' consul)"
+	hostess add consul "$(docker inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' consul)"
 	browser-exec "http://consul:8500"
 }
 dcos(){
-	podman run -it --rm \
+	docker run -it --rm \
 		-v $HOME/.dcos:/root/.dcos \
 		-v "$(pwd)":/root/apps \
 		-w /root/apps \
 		${DOCKER_REPO_PREFIX}/dcos-cli "$@"
 }
 dockfmt(){
-	podman run -it --rm \
+	docker run -it --rm \
 		-v "$(pwd)":"$(pwd)" \
 		-w "$(pwd)" \
-		${podman_REPO_PREFIX}/dockfmt "$@"
+		${DOCKER_REPO_PREFIX}/dockfmt "$@"
 }
 evince(){
-	podman run --rm -it \
+	docker run --rm -it \
 		-v "$(pwd)":/wd \
 		-w /wd \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e DISPLAY=$DISPLAY \
 		${DOCKER_REPO_PREFIX}/evince evince "$@"
 }
-alias entr='podman run --rm -v "$(pwd)":/wd -w /wd jamesmstone/entr'
+alias entr='docker run --rm -v "$(pwd)":/wd -w /wd jamesmstone/entr'
 filezila(){
 
 	del_stopped filezilla
 
-	 podman run \
+	 docker run \
 		-d \
 		-e DISPLAY \
 		-v /tmp/.X11-unix:/tmp/.X11-unix:ro \
@@ -356,7 +356,7 @@ filezila(){
 firefox(){
 	del_stopped firefox
 
-	podman run -d \
+	docker run -d \
 		--memory 2gb \
 		--net host \
 		--cpuset-cpus 0 \
@@ -379,7 +379,7 @@ firefox(){
 	exit 0
 }
 gcalcli(){
-	podman run --rm -it \
+	docker run --rm -it \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v "${HOME}/.gcalcli/home:/home/gcalcli/home" \
 		-v "${HOME}/.gcalcli/work/oauth:/home/gcalcli/.gcalcli_oauth" \
@@ -388,13 +388,13 @@ gcalcli(){
 		${DOCKER_REPO_PREFIX}/gcalcli "$@"
 }
 gpsbabel(){
-	podman run --rm -it -v "$(pwd)":/wd -w /wd jamesmstone/gpsbabel "$@"
+	docker run --rm -it -v "$(pwd)":/wd -w /wd jamesmstone/gpsbabel "$@"
 }
 dgcloud(){
-	podman run --rm -it \
+	docker run --rm -it \
 		-v "${HOME}/.gcloud:/root/.config/gcloud" \
 		-v "${HOME}/.ssh:/root/.ssh:ro" \
-		-v "$(which podman):/usr/bin/docker" \
+		-v "$(which docker):/usr/bin/docker" \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		--name gcloud \
 		${DOCKER_REPO_PREFIX}/gcloud "$@"
@@ -402,7 +402,7 @@ dgcloud(){
 gimp(){
 	del_stopped gimp
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -414,7 +414,7 @@ gimp(){
 		${DOCKER_REPO_PREFIX}/gimp
 }
 gitsome(){
-	podman run --rm -it \
+	docker run --rm -it \
 		-v /etc/localtime:/etc/localtime:ro \
 		--name gitsome \
 		--hostname gitsome \
@@ -423,18 +423,18 @@ gitsome(){
 		${DOCKER_REPO_PREFIX}/gitsome
 }
 hollywood(){
-	podman run --rm -it \
+	docker run --rm -it \
 		--name hollywood \
 		${DOCKER_REPO_PREFIX}/hollywood
 }
 htop(){
-	podman run --rm -it \
+	docker run --rm -it \
 		--pid host \
 		--net none \
 		${DOCKER_REPO_PREFIX}/htop
 }
 http(){
-	podman run -t --rm \
+	docker run -t --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		--log-driver none \
 		${DOCKER_REPO_PREFIX}/httpie "$@"
@@ -444,7 +444,7 @@ imagemin(){
 	local extension="${image##*.}"
 	local filename="${image%.*}"
 
-	podman run --rm -it \
+	docker run --rm -it \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v "${HOME}/Pictures:/root/Pictures" \
 		${DOCKER_REPO_PREFIX}/imagemin sh -c "imagemin /root/Pictures/${image} > /root/Pictures/${filename}_min.${extension}"
@@ -453,13 +453,13 @@ irssi() {
 	del_stopped irssi
 	# relies_on notify_osd
 
-	podman run --rm -it \
+	docker run --rm -it \
 		--user root \
 		-v "${HOME}/.irssi:/home/user/.irssi" \
 		${DOCKER_REPO_PREFIX}/irssi \
 		chown -R user /home/user/.irssi
 
-	podman run --rm -it \
+	docker run --rm -it \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v "${HOME}/.irssi:/home/user/.irssi" \
 		--read-only \
@@ -467,28 +467,28 @@ irssi() {
 		${DOCKER_REPO_PREFIX}/irssi
 }
 
-alias jenkins="podman run --name jenkins -p 8080:8080 -p 50000:50000 -v /var/jenkins_home jenkins "
+alias jenkins="docker run --name jenkins -p 8080:8080 -p 50000:50000 -v /var/jenkins_home jenkins "
 
 jsonresume(){
-	podman run --rm -it -v "$(pwd)":/data/ svendowideit/jsonresume "$@"
+	docker run --rm -it -v "$(pwd)":/data/ svendowideit/jsonresume "$@"
 }
 
 john(){
 	local file
 	file=$(realpath "$1")
 
-	podman run --rm -it \
+	docker run --rm -it \
 		-v "${file}:/root/$(basename "${file}")" \
 		${DOCKER_REPO_PREFIX}/john "$@"
 }
 kubectl () {
-  podman run --rm -it --user $UID:$GID \
+  docker run --rm -it --user $UID:$GID \
     -v /var/run/secrets/kubernetes.io/serviceaccount:/var/run/secrets/kubernetes.io/serviceaccount:ro \
     -w /code -v "$PWD":/code:ro \
     wernight/kubectl "$@"
 }
 kernel_builder(){
-	podman run --rm -it \
+	docker run --rm -it \
 		-v /usr/src:/usr/src \
 		--cpu-shares=512 \
 		--name kernel-builder \
@@ -497,7 +497,7 @@ kernel_builder(){
 keypassxc(){
 	del_stopped keypassxc
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-v /usr/share/X11/xkb:/usr/share/X11/xkb:ro \
@@ -513,7 +513,7 @@ kvm(){
 	# modprobe the module
 	modprobe kvm
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-v /run/libvirt:/var/run/libvirt \
@@ -528,7 +528,7 @@ kvm(){
 libreoffice(){
 	del_stopped libreoffice
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -539,18 +539,18 @@ libreoffice(){
 		${DOCKER_REPO_PREFIX}/libreoffice
 }
 lpass(){
-	podman run --rm -it \
+	docker run --rm -it \
 		-v "${HOME}/.lpass:/root/.lpass" \
 		--name lpass \
 		${DOCKER_REPO_PREFIX}/lpass "$@"
 }
 lynx(){
-	podman run --rm -it \
+	docker run --rm -it \
 		--name lynx \
 		${DOCKER_REPO_PREFIX}/lynx "$@"
 }
 masscan(){
-	podman run -it --rm \
+	docker run -it --rm \
 		--log-driver none \
 		--net host \
 		--cap-add NET_ADMIN \
@@ -562,7 +562,7 @@ mpd(){
 
 	# adding cap sys_admin so I can use nfs mount
 	# the container runs as a unpriviledged user mpd
-	podman run -d \
+	docker run -d \
 		--device /dev/snd \
 		--cap-add SYS_ADMIN \
 		-e MPD_HOST=/var/lib/mpd/socket \
@@ -574,7 +574,7 @@ mpd(){
 		${DOCKER_REPO_PREFIX}/mpd
 }
 mupdf(){
-	podman run --rm \
+	docker run --rm \
 		-v "$(pwd)":/pdf \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
     -e DISPLAY=unix$DISPLAY \
@@ -596,7 +596,7 @@ mutt(){
 		SMTP_SERVER=$IMAP_SERVER
 	fi
 
-	podman run -it --rm \
+	docker run -it --rm \
 		-e GMAIL \
 		-e GMAIL_NAME \
 		-e GMAIL_PASS \
@@ -613,7 +613,7 @@ mutt(){
 ncmpc(){
 	del_stopped ncmpc
 
-	podman run --rm -it \
+	docker run --rm -it \
 		-v "${HOME}/.mpd/socket:/var/run/mpd/socket" \
 		-e MPD_HOST=/var/run/mpd/socket \
 		--name ncmpc \
@@ -622,7 +622,7 @@ ncmpc(){
 neoman(){
 	del_stopped neoman
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -634,7 +634,7 @@ neoman(){
 neovim(){
 	del_stopped neovim
 
-	podman run -it \
+	docker run -it \
 	    -v $HOME/.config/nvim:/root/.config/nvim \
 	    -v "$(pwd)":/data \
 	    --workdir /data \
@@ -646,7 +646,7 @@ nes(){
 	del_stopped nes
 	local game=$1
 
-	podman run -d \
+	docker run -d \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
 		--device /dev/dri \
@@ -655,14 +655,14 @@ nes(){
 		${DOCKER_REPO_PREFIX}/nes "/games/${game}.rom"
 }
 netcat(){
-	podman run --rm -it \
+	docker run --rm -it \
 		--net host \
 		${DOCKER_REPO_PREFIX}/netcat "$@"
 }
 nginx(){
 	del_stopped nginx
 
-	podman run -d \
+	docker run -d \
 		--restart always \
 		-v "${HOME}/.nginx:/etc/nginx" \
 		--net host \
@@ -674,14 +674,14 @@ nginx(){
 	sudo hostess add localhost 127.0.0.1
 }
 nmap(){
-	podman run --rm -it \
+	docker run --rm -it \
 		--net host \
 		${DOCKER_REPO_PREFIX}/nmap "$@"
 }
 notify_osd(){
 	del_stopped notify_osd
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		--net none \
@@ -696,7 +696,7 @@ alias notify-send=notify_send
 notify_send(){
 	relies_on notify_osd
 	local args=${*:2}
-	podman exec -i notify_osd notify-send "$1" "${args}"
+	docker exec -i notify_osd notify-send "$1" "${args}"
 }
 pandoc(){
 	local file=${*: -1}
@@ -706,7 +706,7 @@ pandoc(){
 	rfile=$(readlink -m "/$(basename "$file")")
 	local args=${*:1:${#@}-1}
 
-	podman run --rm \
+	docker run --rm \
 		-v "${lfile}:${rfile}" \
 		-v /tmp:/tmp \
 		--name pandoc \
@@ -715,7 +715,7 @@ pandoc(){
 pivman(){
 	del_stopped pivman
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -727,18 +727,18 @@ pivman(){
 pms(){
 	del_stopped pms
 
-	podman run --rm -it \
+	docker run --rm -it \
 		-v "${HOME}/.mpd/socket:/var/run/mpd/socket" \
 		-e MPD_HOST=/var/run/mpd/socket \
 		--name pms \
 		${DOCKER_REPO_PREFIX}/pms "$@"
 }
-alias polymer="podman run -it --rm -p 8080:8080 -v "$(pwd)":/home/polymer/app jefferyb/polymer-cli polymer "
+alias polymer="docker run -it --rm -p 8080:8080 -v "$(pwd)":/home/polymer/app jefferyb/polymer-cli polymer "
 pond(){
 	del_stopped pond
 	relies_on torproxy
 
-	podman run --rm -it \
+	docker run --rm -it \
 		--net container:torproxy \
 		--name pond \
 		${DOCKER_REPO_PREFIX}/pond
@@ -747,7 +747,7 @@ privoxy(){
 	del_stopped privoxy
 	relies_on torproxy
 
-	podman run -d \
+	docker run -d \
 		--restart always \
 		--link torproxy:torproxy \
 		-v /etc/localtime:/etc/localtime:ro \
@@ -755,12 +755,12 @@ privoxy(){
 		--name privoxy \
 		${DOCKER_REPO_PREFIX}/privoxy
 
-	hostess add privoxy "$(podman inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' privoxy)"
+	hostess add privoxy "$(docker inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' privoxy)"
 }
 pulseaudio(){
 	del_stopped pulseaudio
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		--device /dev/snd \
 		-p 4713:4713 \
@@ -770,7 +770,7 @@ pulseaudio(){
 		${DOCKER_REPO_PREFIX}/pulseaudio
 }
 rainbowstream(){
-	podman run -it --rm \
+	docker run -it --rm \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v "${HOME}/.rainbow_oauth:/root/.rainbow_oauth" \
 		-v "${HOME}/.rainbow_config.json:/root/.rainbow_config.json" \
@@ -779,7 +779,7 @@ rainbowstream(){
 }
 reaper(){
 	del_stopped reaper
-	podman run -it --rm \
+	docker run -it --rm \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-v $("pwd")/home \
@@ -796,7 +796,7 @@ reaper(){
 registrator(){
 	del_stopped registrator
 
-	podman run -d --restart always \
+	docker run -d --restart always \
 		-v /var/run/docker.sock:/tmp/docker.sock \
 		--net host \
 		--name registrator \
@@ -805,7 +805,7 @@ registrator(){
 remmina(){
 	del_stopped remmina
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -819,7 +819,7 @@ remmina(){
 ricochet(){
 	del_stopped ricochet
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -833,7 +833,7 @@ ricochet(){
 rstudio(){
 	del_stopped rstudio
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-v "${HOME}/fastly-logs:/root/fastly-logs" \
@@ -847,7 +847,7 @@ rstudio(){
 s3cmdocker(){
 	del_stopped s3cmd
 
-	podman run --rm -it \
+	docker run --rm -it \
 		-e AWS_ACCESS_KEY="${DOCKER_AWS_ACCESS_KEY}" \
 		-e AWS_SECRET_KEY="${DOCKER_AWS_ACCESS_SECRET}" \
 		-v "$(pwd):/root/s3cmd-workspace" \
@@ -857,7 +857,7 @@ s3cmdocker(){
 scudcloud(){
 	del_stopped scudcloud
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -883,12 +883,12 @@ scudcloud(){
 	exit 0
 }
 shellcheck(){
-	podman run -v"$(pwd)":/tmp/ -w/tmp/ chrisdaish/shellcheck "$@"
+	docker run -v"$(pwd)":/tmp/ -w/tmp/ chrisdaish/shellcheck "$@"
 }
 shorewall(){
 	del_stopped shorewall
 
-	podman run --rm -it \
+	docker run --rm -it \
 		--net host \
 		--cap-add NET_ADMIN \
 		--privileged \
@@ -899,7 +899,7 @@ skype(){
 	del_stopped skype
 	relies_on pulseaudio
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -915,7 +915,7 @@ skype(){
 slack(){
 	del_stopped slack
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -932,7 +932,7 @@ slack(){
 spotify(){
 	del_stopped spotify
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-v $HOME/.spotify/cache:/home/spotify/.cache \
@@ -951,13 +951,13 @@ ssh2john(){
 	local file
 	file=$(realpath "$1")
 
-	podman run --rm -it \
+	docker run --rm -it \
 		-v "${file}:/root/$(basename "${file}")" \
 		--entrypoint ssh2john \
 		${DOCKER_REPO_PREFIX}/john "$@"
 }
 starUML(){
-	podman run -it --rm \
+	docker run -it --rm \
 		 -v "$(pwd)":/starUML \
 		 -w /starUML \
 		 -v /etc/group:/etc/group:ro \
@@ -972,7 +972,7 @@ steam(){
 	del_stopped steam
 	relies_on pulseaudio
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /etc/machine-id:/etc/machine-id:ro \
 		-v /var/run/dbus:/var/run/dbus \
@@ -987,7 +987,7 @@ steam(){
 }
 #syncthing(){
 #	local DOCKER_CONTENT_TRUST=0
-	#podman run -d \
+	#docker run -d \
 	#	 --restart=always \
 	#	 -v /srv/sync:/srv/data \
 	#	 -v /srv/syncthing:/srv/config \
@@ -995,7 +995,7 @@ steam(){
 	#	 -p 22000:22000  -p 21025:21025/udp -p 8080:8080 \
 	#	 --name syncthing \
 	#	 joeybaker/syncthing
-#	podman run -d --name=syncthing \
+#	docker run -d --name=syncthing \
 #		  --restart=on-failure:20 \
 #		  -v /opt/appdata/syncthing:/config \
 #		  -v $HOME:/sync/james \
@@ -1008,24 +1008,24 @@ steam(){
 #}
 
 #svn(){
-#	 podman run -it --rm -v "$(pwd)":/src jgsqware/svn-client "$@"
+#	 docker run -it --rm -v "$(pwd)":/src jgsqware/svn-client "$@"
 #}
 
 t(){
-	podman run -t --rm \
+	docker run -t --rm \
 		-v "${HOME}/.trc:/root/.trc" \
 		--log-driver none \
 		${DOCKER_REPO_PREFIX}/t "$@"
 }
 tarsnap(){
-	podman run --rm -it \
+	docker run --rm -it \
 		-v "${HOME}/.tarsnaprc:/root/.tarsnaprc" \
 		-v "${HOME}/.tarsnap:/root/.tarsnap" \
 		-v "$HOME:/root/workdir" \
 		${DOCKER_REPO_PREFIX}/tarsnap "$@"
 }
 telnet(){
-	podman run -it --rm \
+	docker run -it --rm \
 		--log-driver none \
 		${DOCKER_REPO_PREFIX}/telnet "$@"
 }
@@ -1033,13 +1033,13 @@ termboy(){
 	del_stopped termboy
 	local game=$1
 
-	podman run --rm -it \
+	docker run --rm -it \
 		--device /dev/snd \
 		--name termboy \
 		${DOCKER_REPO_PREFIX}/nes "/games/${game}.rom"
 }
 texmaker(){
-	podman run -it --rm \
+	docker run -it --rm \
 		-e USER=$USER -e USERID=$UID \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e DISPLAY=unix$DISPLAY \
@@ -1050,7 +1050,7 @@ texmaker(){
 tor(){
 	del_stopped tor
 
-	podman run -d \
+	docker run -d \
 		--net host \
 		--name tor \
 		${DOCKER_REPO_PREFIX}/tor
@@ -1064,7 +1064,7 @@ tor(){
 torbrowser(){
 	del_stopped torbrowser
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -1080,7 +1080,7 @@ torbrowser(){
 tormessenger(){
 	del_stopped tormessenger
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -1096,24 +1096,24 @@ tormessenger(){
 torproxy(){
 	del_stopped torproxy
 
-	podman run -d \
+	docker run -d \
 		--restart always \
 		-v /etc/localtime:/etc/localtime:ro \
 		-p 9050:9050 \
 		--name torproxy \
 		${DOCKER_REPO_PREFIX}/tor-proxy
 
-	hostess add torproxy "$(podman inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' torproxy)"
+	hostess add torproxy "$(docker inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' torproxy)"
 }
 traceroute(){
-	podman run --rm -it \
+	docker run --rm -it \
 		--net host \
 		${DOCKER_REPO_PREFIX}/traceroute "$@"
 }
 transmission(){
 	del_stopped transmission
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v "${HOME}/Torrents:/transmission/download" \
 		-v "${HOME}/.transmission:/transmission/config" \
@@ -1124,12 +1124,12 @@ transmission(){
 		${DOCKER_REPO_PREFIX}/transmission
 
 
-	hostess add transmission "$(podman inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' transmission)"
+	hostess add transmission "$(docker inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' transmission)"
 	browser-exec "http://transmission:9091"
 }
 
 travis(){
-	podman run -it --rm \
+	docker run -it --rm \
 		-v "${HOME}/.travis:/root/.travis" \
 		-v "$(pwd):/usr/src/repo:ro" \
 		--workdir /usr/src/repo \
@@ -1138,7 +1138,7 @@ travis(){
 }
 
 trello(){
-	podman run --rm \
+	docker run --rm \
 		-e TRELLO_DEVELOPER_PUBLIC_KEY="$TRELLO_DEVELOPER_PUBLIC_KEY" \
 		-e TRELLO_MEMBER_TOKEN="$TRELLO_MEMBER_TOKEN" \
 		jamesmstone/trello "$@"
@@ -1147,7 +1147,7 @@ trello(){
 virsh(){
 	relies_on kvm
 
-	podman run -it --rm \
+	docker run -it --rm \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /run/libvirt:/var/run/libvirt \
 		--log-driver none \
@@ -1157,7 +1157,7 @@ virsh(){
 virt_viewer(){
 	relies_on kvm
 
-	podman run -it --rm \
+	docker run -it --rm \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix  \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -1169,7 +1169,7 @@ virt_viewer(){
 		${DOCKER_REPO_PREFIX}/virt-viewer "$@"
 }
 virtualbox(){
-	podman run -d \
+	docker run -d \
 	 	-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e DISPLAY=unix$DISPLAY \
 		--privileged \
@@ -1180,7 +1180,7 @@ alias virt-viewer="virt_viewer"
 visualstudio(){
 	del_stopped visualstudio
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix  \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -1191,7 +1191,7 @@ vlc(){
 	del_stopped vlc
 	relies_on pulseaudio
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -1210,7 +1210,7 @@ vlc(){
 watchman(){
 	del_stopped watchman
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v "${HOME}/Downloads:/root/Downloads" \
 		--name watchman \
@@ -1218,7 +1218,7 @@ watchman(){
 }
 webstorm(){
 	del_stopped webstorm
-	podman run  \
+	docker run  \
         	-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e DISPLAY=${DISPLAY} \
@@ -1230,7 +1230,7 @@ webstorm(){
 weeslack(){
 	del_stopped weeslack
 
-	podman run --rm -it \
+	docker run --rm -it \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v "${HOME}/.weechat:/home/user/.weechat" \
 		--name weeslack \
@@ -1239,7 +1239,7 @@ weeslack(){
 wireshark(){
 	del_stopped wireshark
 
-	podman run -d \
+	docker run -d \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
@@ -1250,7 +1250,7 @@ wireshark(){
 		${DOCKER_REPO_PREFIX}/wireshark
 }
 wrk(){
-	podman run -it --rm \
+	docker run -it --rm \
 		--log-driver none \
 		--name wrk \
 		${DOCKER_REPO_PREFIX}/wrk "$@"
@@ -1258,7 +1258,7 @@ wrk(){
 ykpersonalize(){
 	del_stopped ykpersonalize
 
-	podman run --rm -it \
+	docker run --rm -it \
 		-v /etc/localtime:/etc/localtime:ro \
 		--device /dev/usb \
 		--device /dev/bus/usb \
@@ -1268,7 +1268,7 @@ ykpersonalize(){
 yubico_piv_tool(){
 	del_stopped yubico-piv-tool
 
-	podman run --rm -it \
+	docker run --rm -it \
 		-v /etc/localtime:/etc/localtime:ro \
 		--device /dev/usb \
 		--device /dev/bus/usb \
@@ -1284,11 +1284,11 @@ alias yubico-piv-tool="yubico_piv_tool"
 atom(){
     #Instalation
     # wget http://raw.githubusercontent.com/jfrazelle/dockerfiles/master/atom/Dockerfile
-    # podman build -t atom
+    # docker build -t atom
 
     del_stopped atom
 
-    podman run -it --rm \
+    docker run -it --rm \
         --name atom \
 	--net host \
         --memory 1gb \
@@ -1309,7 +1309,7 @@ atom(){
 
 clion(){
 	del_stopped clion
-	podman run \
+	docker run \
 		--rm \
 		--name clion \
 		--net "host" \
@@ -1319,12 +1319,12 @@ clion(){
 		-v "$(dirname "$(pwd)")":"$(dirname "$(pwd)")" \
 		-w "$(pwd)" \
 		--security-opt seccomp=unconfined \
-	kurron/podman-clion:latest "$@"
+	kurron/docker-clion:latest "$@"
 }
 eclipse(){
 	del_stopped eclipse
 
-	podman run -ti --rm \
+	docker run -ti --rm \
 	         -e DISPLAY=$DISPLAY \
 		 -v /tmp/.X11-unix:/tmp/.X11-unix \
 		 -v "${HOME}/.eclipse":/home/developer \
@@ -1335,7 +1335,7 @@ eclipse(){
 }
 idea(){
 	del_stopped idea
-	podman run --rm -it \
+	docker run --rm -it \
            --net="host" \
 	   --privileged=true \
        	   -e DISPLAY=${DISPLAY} \
@@ -1345,7 +1345,7 @@ idea(){
         jamesmstone/idea-ultimate
 }
 leksah(){
-	podman run --rm \
+	docker run --rm \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e DISPLAY=unix$DISPLAY \
@@ -1361,7 +1361,7 @@ phpstorm(){
 	GOPATH="$(pwd)"
 	PREF_DIR=${HOME}/dotfiles/phpstorm
 
-	podman run -tdi \
+	docker run -tdi \
 	   --name phpstorm \
            --net="host" \
            --privileged=true \
@@ -1369,20 +1369,20 @@ phpstorm(){
            -v /tmp/.X11-unix:/tmp/.X11-unix \
            -v ${PREF_DIR}:/home/developer/.IdeaIC2016.1 \
            -v "${GOPATH}":/home/developer/go \
-           jamesmstone/podman-phpstorm
+           jamesmstone/docker-phpstorm
 }
 #
 # PHP related
 #
 php(){
-	podman run -it --rm \
+	docker run -it --rm \
 		-v "$(pwd)":/usr/src/myapp \
 		-w /usr/src/myapp \
 		php:7.0-cli php "$@"
 }
 
 composer(){
- 	podman run --rm -it \
+ 	docker run --rm -it \
 	    -v "$(pwd)":/app \
 	    --user $(id -u):$(id -g) \
 	    composer "$@"
@@ -1394,14 +1394,14 @@ composer(){
 node(){
     del_stopped node
         #-v $HOME/.docker/node:/usr/local/lib \
-    podman run -it --rm \
+    docker run -it --rm \
         -v /etc/localtime:/etc/localtime:ro \
         -v $(pwd):/app \
         -w /app \
         node node "$@"
 }
 npx(){
-    podman run -it --rm \
+    docker run -it --rm \
         -v /etc/localtime:/etc/localtime:ro \
          --user="$(id -u):$(id -g)" \
 	-v $(pwd):/app \
@@ -1409,7 +1409,7 @@ npx(){
         node npx "$@"
 }
 npm(){
-    podman run -it --rm \
+    docker run -it --rm \
         -v /etc/localtime:/etc/localtime:ro \
          --user="$(id -u):$(id -g)" \
 	-v $(pwd):/app \
@@ -1419,7 +1419,7 @@ npm(){
 tns(){
     del_stopped tns
 
-    podman run -it --rm \
+    docker run -it --rm \
         --privileged \
         --name tns \
         -v /etc/localtime:/etc/localtime:ro \
@@ -1429,7 +1429,7 @@ tns(){
 }
 
 weka(){
-    podman run --rm \
+    docker run --rm \
 	    -v "$(pwd)":"$(pwd)" \
 	    -w "$(pwd)" \
 	    -e DISPLAY=$DISPLAY \
@@ -1439,7 +1439,7 @@ weka(){
 
 ws(){		# Webserver current dir
     local port=4321
-    open "http://172.17.0.1:${port}" && podman run \
+    open "http://172.17.0.1:${port}" && docker run \
 	-p $port:80 \
 	-v $PWD:/usr/share/nginx/html:ro \
 	 --rm \
@@ -1447,31 +1447,31 @@ ws(){		# Webserver current dir
 }
 
 ubuntu_playground(){
-	echo "Command: podman run -it -v \"$(pwd)\":/home/james --rm ubuntu bash";
+	echo "Command: docker run -it -v \"$(pwd)\":/home/james --rm ubuntu bash";
 	echo "Warning run with a current dir, volumed to: /home/james";
 	echo "Don't delete everything!!!";
-	podman run -it -v "$(pwd)":/home/james --rm ubuntu bash
+	docker run -it -v "$(pwd)":/home/james --rm ubuntu bash
 }
 
 ###
 ### Awesome sauce by @jpetazzo
 ###
-if command -v "podman" &>/dev/null; then
+if command -v "docker" &>/dev/null; then
 	command_not_found_handle () {
 		# Check if there is a container image with that name
-		if ! podman inspect --format '{{ .Author }}' "$1" >&/dev/null ; then
+		if ! docker inspect --format '{{ .Author }}' "$1" >&/dev/null ; then
 			echo "$0: $1: command not found"
 			return
 		fi
 
 		# Check that it's really the name of the image, not a prefix
-		if podman inspect --format '{{ .Id }}' "$1" | grep -q "^$1" ; then
+		if docker inspect --format '{{ .Id }}' "$1" | grep -q "^$1" ; then
 			echo "$0: $1: command not found"
 			return
 		fi
 
 
-		podman run -ti -u "$(whoami)" -w "$HOME" \
+		docker run -ti -u "$(whoami)" -w "$HOME" \
 			"$(env | cut -d= -f1 | awk '{print "-e", $1}')" \
 			--device /dev/snd \
 			-v /etc/passwd:/etc/passwd:ro \

@@ -79,7 +79,6 @@ alias mv='mv -i'
 # untar
 alias untar='tar xvf'
 
-# make using docker/podman faster
-alias docker=podman
-alias d=podman
+# make using docker faster
+alias d=docker
 alias dc=docker-compose
