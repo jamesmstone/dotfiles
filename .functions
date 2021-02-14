@@ -194,15 +194,12 @@ ds(){
 	eval "$@" &>/dev/null &disown;
 }
 
-ll ()
+ll()
 {
     local user="jamesmstone"
     local domain="hotmail.com"
     local email="$user@$domain" #split up to prevent SPAM when publishing
 
     lpass login --plaintext-key --force "$email";
-    lpass show "keybase paperkey" --notes | keybase oneshot -u jamesstone;
-    lpass show "id_rsa" --notes > ~/.ssh/id_rsa;
-    chmod 400 ~/.ssh/id_rsa;
-    ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub;
+	run-parts ~/dotfiles/postLogin/
 }
