@@ -4,6 +4,9 @@ all: dotfiles etc emacs
 
 emacs:
 	git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d; \
+	git clone --depth 1 https://github.com/jamesmstone/.doom.d ~/.doom.d; \
+	git -C ~/.doom.d remote set-url origin git@github.com:jamesmstone/.doom.d; \
+	~/.emacs.d/bin/doom install; \
 	yes | ~/.emacs.d/bin/doom install; \
 
 dotfiles:
