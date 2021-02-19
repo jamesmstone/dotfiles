@@ -201,5 +201,5 @@ ll()
     local email="$user@$domain" #split up to prevent SPAM when publishing
 
     lpass login --plaintext-key --force "$email";
-	run-parts ~/dotfiles/postLogin/
+	find  ~/dotfiles/postLogin/ -type f -perm +111 -exec  {} \;
 }
