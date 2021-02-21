@@ -22,3 +22,6 @@ export QT_DEVICE_PIXEL_RATIO=2
 
 # turn on secure docker
 #export DOCKER_CONTENT_TRUST=1
+
+# GPG tty
+export GPG_TTY=$(tty)
