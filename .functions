@@ -207,6 +207,7 @@ ll()
 pass-init()
 {
 	local keyid="$(keybase pgp list | awk '/Keybase Key ID:/ {print $4}')";
-	keybase pgp export -s -q "${keyid}" | gpg --import --allow-secret-key-import;
-	echo -e "5\ny\n"  |gpg --command-fd 0 --edit-key DFB2A9423C974E94 trust
+	keybase pgp export --unencrypted -s -q "${keyid}" | gpg --import --allow-secret-key-import;
+	echo -e "5\ny\n" | gpg --command-fd 0 --edit-key DFB2A9423C974E94 trust
+	
 }
