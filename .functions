@@ -211,3 +211,14 @@ pass-init()
 	echo -e "5\ny\n" | gpg --command-fd 0 --edit-key DFB2A9423C974E94 trust
 	
 }
+
+work-vpn()
+{
+	local config="$(mktemp)"
+	pass show workvpn > "$config"
+	local auth="$(mktemp)"
+	pass show gitlab.tradition-private | awk 'BEGIN{print "james.stone"} /password:/{print $2}'> "$auth"
+	sudo modprobe tun
+	sudo openvpn --config "$config" --auth-user-pass "$auth" 
+	rm $auth $config
+}
