@@ -1,10 +1,9 @@
 .PHONY: all bin dotfiles etc emacs test shellcheck
 
-all: dotfiles etc emacs pass
+all: dotfiles etc emacs
 
 pass:
-	git clone --depth 1 https://github.com/jamesmstone/.password-store ~/.password-store; \
-	git -C ~/.password-store remote set-url origin git@github.com:jamesmstone/.password-store.git; \
+	git clone --depth 1 git@github.com:jamesmstone/.password-store.git ~/.password-store; \
 
 emacs:
 	git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d; \
