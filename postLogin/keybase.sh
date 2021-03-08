@@ -8,3 +8,5 @@ lpass show keybase.io --pass |
     keybase unlock --stdin;                                                               
 
 pass-init
+cd ~/dotfiles/
+make pass
