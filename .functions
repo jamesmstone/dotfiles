@@ -219,6 +219,6 @@ work-vpn()
 	local auth="$(mktemp)"
 	pass show gitlab.tradition-private | awk 'BEGIN{print "james.stone"} /password:/{print $2}'> "$auth"
 	sudo modprobe tun
-	ds sudo openvpn --config "$config" --auth-user-pass "$auth" 
+	sudo openvpn --config "$config" --auth-user-pass "$auth" 
 	rm $auth $config
 }
