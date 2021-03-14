@@ -10,3 +10,5 @@ lpass show keybase.io --pass |
 pass-init
 cd ~/dotfiles/
 make pass
+
+make org
