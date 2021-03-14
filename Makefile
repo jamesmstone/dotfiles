@@ -12,6 +12,9 @@ emacs:
 	~/.emacs.d/bin/doom install; \
 	yes | ~/.emacs.d/bin/doom install; \
 
+org:
+	git clone --depth 1 git@github.com:/jamesmstone/Org ~/Org; \
+
 dotfiles:
 	# add aliases for dotfiles
 	for file in $(shell find $(CURDIR) -name ".*" -not -name "etc" -not -name ".gitignore" -not -name ".travis.yml" -not -name ".git" -not -name ".*.swp" -not -name ".gnupg"); do \
