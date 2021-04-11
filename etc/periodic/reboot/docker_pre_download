@@ -1,0 +1,8 @@
+#!/bin/sh
+
+docker pull browsh/browsh
+EXITVALUE=$?
+if [ $EXITVALUE != 0 ]; then
+    /usr/bin/logger -t resize_fs "ALERT exited abnormally with [$EXITVALUE]"
+fi
+exit 0
