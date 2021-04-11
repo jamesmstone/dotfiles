@@ -11,6 +11,9 @@ emacs:
 	git -C ~/.doom.d remote set-url origin git@github.com:jamesmstone/.doom.d; \
 	~/.emacs.d/bin/doom install; \
 	yes | ~/.emacs.d/bin/doom install; \
+	sudo apt add alpine-sdk cmake libtool; \
+	emacs --eval '(progn (setq vterm-always-compile-module t) (vterm-module-compile) (kill-emacs))'; \
+	sudo apt del alpine-sdk cmake libtool; \
 
 org:
 	git clone --depth 1 git@github.com:/jamesmstone/Org ~/Org; \
