@@ -164,6 +164,10 @@ bees(){
 		--name bees \
 		${DOCKER_REPO_PREFIX}/beeswithmachineguns "$@"
 }
+browsh(){
+	docker run -it --rm \
+		browsh/browsh "$@"
+}
 cadvisor(){
 	docker run -d \
 		--restart always \

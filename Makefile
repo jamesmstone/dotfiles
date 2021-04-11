@@ -9,10 +9,9 @@ emacs:
 	git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d; \
 	git clone --depth 1 https://github.com/jamesmstone/.doom.d ~/.doom.d; \
 	git -C ~/.doom.d remote set-url origin git@github.com:jamesmstone/.doom.d; \
-	~/.emacs.d/bin/doom install; \
 	yes | ~/.emacs.d/bin/doom install; \
 	sudo apk add alpine-sdk cmake libtool; \
-	emacs --eval '(progn (setq vterm-always-compile-module t) (vterm-module-compile) (kill-emacs))'; \
+	emacs --batch --eval '(progn (setq vterm-always-compile-module t) (vterm-module-compile) (kill-emacs))'; \
 	sudo apk del alpine-sdk cmake libtool; \
 
 org:
