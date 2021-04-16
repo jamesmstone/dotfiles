@@ -10,12 +10,12 @@ emacs:
 	git clone --depth 1 https://github.com/jamesmstone/.doom.d ~/.doom.d; \
 	git -C ~/.doom.d remote set-url origin git@github.com:jamesmstone/.doom.d; \
 	yes | ~/.emacs.d/bin/doom install; \
-	sudo apk add gcc cmake libtool; \
+	sudo apk add alpine-sdk gcc cmake libtool; \
 	mkdir -p \`find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*'\`/build && \
 	cd \`find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*'\`/build && \
 	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..  && \
 	make; \
-	sudo apk del gcc cmake libtool;" \
+	sudo apk del alpine-sdk gcc cmake libtool;" \
 
 org:
 	git clone --depth 1 git@github.com:/jamesmstone/Org ~/Org; \
