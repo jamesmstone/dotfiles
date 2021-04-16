@@ -222,3 +222,8 @@ work-vpn()
 	sudo openvpn --config "$config" --auth-user-pass "$auth" 
 	rm $auth $config
 }
+
+work-git-clone()
+{
+	git clone git@gitlab.tradition-private:rehub/$1 ~/$1
+}
