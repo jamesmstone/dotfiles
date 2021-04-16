@@ -12,7 +12,7 @@ emacs:
 	yes | ~/.emacs.d/bin/doom install; \
 	sudo apk add make gcc cmake libtool; \
 	mkdir -p \`find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*'\`/build && \
-	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo  \`find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*'\` && \
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo  \`find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*'\`  \`find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*'\` && \
 	make -C  \`find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*'\`/build; \
 	sudo apk del make gcc cmake libtool;" \
 
