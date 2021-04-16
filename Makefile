@@ -9,7 +9,7 @@ emacs:
 	git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d; \
 	git clone --depth 1 https://github.com/jamesmstone/.doom.d ~/.doom.d; \
 	git -C ~/.doom.d remote set-url origin git@github.com:jamesmstone/.doom.d; \
-	yes | ~/.emacs.d/bin/doom install; \
+	yes | ~/.emacs.d/bin/doom install;
 	sudo apk add make gcc cmake libtool; \
 	mkdir -p "$(shell find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*')/build" && \
 	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo  "$(shell find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*')" && \
