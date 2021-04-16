@@ -11,7 +11,7 @@ emacs:
 	git -C ~/.doom.d remote set-url origin git@github.com:jamesmstone/.doom.d; \
 	yes | ~/.emacs.d/bin/doom install; \
 	sudo apk add make gcc cmake libtool; \
-	cd "$(find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*')" && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo  .. && make ; \
+	cd "$(find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*')" && mkdir -p build && cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo  .. && cd build && make ; \
 	sudo apk del make gcc cmake libtool; \
 
 org:
