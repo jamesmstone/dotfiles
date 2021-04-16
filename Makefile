@@ -10,9 +10,9 @@ emacs:
 	git clone --depth 1 https://github.com/jamesmstone/.doom.d ~/.doom.d; \
 	git -C ~/.doom.d remote set-url origin git@github.com:jamesmstone/.doom.d; \
 	yes | ~/.emacs.d/bin/doom install; \
-	sudo apk add alpine-sdk cmake libtool; \
-	emacs --batch --eval '(progn (setq vterm-always-compile-module t) (vterm-module-compile) (kill-emacs))'; \
-	sudo apk del alpine-sdk cmake libtool; \
+	sudo apk add make gcc cmake libtool; \
+	cd "$(find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*')" && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo  .. && make ; \
+	sudo apk del make gcc cmake libtool; \
 
 org:
 	git clone --depth 1 git@github.com:/jamesmstone/Org ~/Org; \
