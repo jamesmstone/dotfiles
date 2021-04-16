@@ -9,7 +9,7 @@ emacs:
 	$(SHELL) $(.SHELLFLAGS) "git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d; \
 	git clone --depth 1 https://github.com/jamesmstone/.doom.d ~/.doom.d; \
 	git -C ~/.doom.d remote set-url origin git@github.com:jamesmstone/.doom.d; \
-	yes | ~/.emacs.d/bin/doom install; \
+	~/.emacs.d/bin/doom -d install; \
 	sudo apk add alpine-sdk gcc cmake libtool; \
 	mkdir -p \`find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*'\`/build && \
 	cd \`find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*'\`/build && \
