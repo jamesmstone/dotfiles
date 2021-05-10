@@ -1,6 +1,6 @@
-.PHONY: all bin dotfiles etc emacs test shellcheck
+.PHONY: all bin dotfiles etc emacs mbsync test shellcheck
 
-all: dotfiles etc emacs
+all: dotfiles etc emacs mbsync
 
 pass:
 	git clone --depth 1 git@github.com:jamesmstone/.password-store.git ~/.password-store; \
@@ -16,6 +16,9 @@ emacs:
 	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..  && \
 	make; \
 	sudo apk del alpine-sdk gcc cmake libtool;" \
+
+mbsync:
+	mkdir -p ~/Maildir/gmail ~/Maildir/exchange; \
 
 org:
 	git clone --depth 1 git@github.com:/jamesmstone/Org ~/Org; \
