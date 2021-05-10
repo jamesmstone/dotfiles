@@ -19,6 +19,7 @@ emacs:
 
 mbsync:
 	mkdir -p ~/Maildir/gmail ~/Maildir/exchange; \
+	mu init; \
 
 org:
 	git clone --depth 1 git@github.com:/jamesmstone/Org ~/Org; \
