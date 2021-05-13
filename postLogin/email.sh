@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source ~/.functions
-ds "mbsync gmail && mu index"
+
+eval make -f - index <<EOF &> /dev/null & disown
+.PHONY: index gmail
+
+all: gmail index
+
+index: gmail
+	mu index
+
+gmail:
+	mbsync gmail
+
+EOF
