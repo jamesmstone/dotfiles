@@ -54,7 +54,7 @@ Expunge Both
 SyncState *
 
 Channel gmail-trash
-Master :gmail-remote:"[Gmail]/Trash"
+Master :gmail-remote:"[Gmail]/Bin"
 Slave :gmail-local:trash
 Create Both
 Expunge Both
