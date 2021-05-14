@@ -201,7 +201,7 @@ ll()
     local email="$user@$domain" #split up to prevent SPAM when publishing
 
     lpass login --plaintext-key --force "$email";
-	find  ~/dotfiles/postLogin/ -type f -perm +111 -exec  {} \;
+	find . -type f -perm +111 | xargs -P4 -n1  sh -c 
 }
 
 pass-init()
