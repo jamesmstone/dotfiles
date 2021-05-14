@@ -1,4 +1,4 @@
-.PHONY: all bin dotfiles etc emacs mbsync test shellcheck
+.PHONY: all bin dotfiles etc emacs mbsync test shellcheck ssh
 
 all: dotfiles etc emacs mbsync
 
@@ -24,11 +24,19 @@ mbsync:
 org:
 	git clone --depth 1 git@github.com:/jamesmstone/Org ~/Org; \
 
-dotfiles:
+dotfiles: ssh
 	# add aliases for dotfiles
 	for file in $(shell find $(CURDIR) -name ".*" -not -name "etc" -not -name ".gitignore" -not -name ".travis.yml" -not -name ".git" -not -name ".*.swp" -not -name ".gnupg"); do \
 		f=$$(basename $$file); \
 		ln -sfn $$file $(HOME)/$$f; \
+	done; \
+
+ssh:
+	# add dotfiles for .ssh
+	mkdir -p $(HOME)/.ssh; \
+	for file in $(shell find $(CURDIR)/.ssh -name "*" -type f); do \
+		f=$$(basename $$file); \
+		ln -sfn $$file $(HOME)/.ssh/$$f; \
 	done; \
 
 etc:
