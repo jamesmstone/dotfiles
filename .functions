@@ -196,20 +196,9 @@ ds(){
 
 ll()
 {
-    local user="jamesmstone"
-    local domain="hotmail.com"
-    local email="$user@$domain" #split up to prevent SPAM when publishing
-
-    lpass login --plaintext-key --force "$email";
-	find . -type f -perm +111 | xargs -P4 -n1  sh -c 
+	make -f ~/dotfiles/postLogin/Makefile;
 }
 
-pass-init()
-{
-	local keyid="$(keybase pgp list | awk '/Keybase Key ID:/ {print $4}')";
-	keybase pgp export --unencrypted -s -q "${keyid}" | gpg --import --allow-secret-key-import;
-	echo -e "5\ny\n" | gpg --command-fd 0 --edit-key DFB2A9423C974E94 trust
-}
 
 work-vpn()
 {
