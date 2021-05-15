@@ -18,7 +18,7 @@ emacs:
 	sudo apk del alpine-sdk gcc cmake libtool;" \
 
 mbsync:
-	mkdir -p ~/Maildir/gmail ~/Maildir/exchange; \
+	mkdir -p ~/Maildir/gmail ~/Maildir/outlook ~/Maildir/exchange; \
 	mu init; \
 
 org:

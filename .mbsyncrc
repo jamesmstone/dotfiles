@@ -66,6 +66,8 @@ Slave :gmail-local:sent
 Create Both
 Expunge Both
 SyncState *
+MaxMessages 1000
+ExpireUnread no
 
 # GROUPS PUT TOGETHER CHANNELS, SO THAT WE CAN INVOKE
 # MBSYNC ON A GROUP TO SYNC ALL CHANNELS
@@ -78,3 +80,35 @@ Channel gmail-inbox
 Channel gmail-sent
 Channel gmail-trash
 
+
+
+# Outlook
+IMAPAccount outlook
+Host outlook.office365.com
+Port 993
+User jamesmstone@hotmail.com
+PassCmd "pass show Email/office365.com_app_password_emacs"
+AuthMechs PLAIN
+SSLType IMAPS
+SSLVersions TLSv1.2
+PipelineDepth 1
+
+
+IMAPStore outlook-remote
+Account outlook
+
+MaildirStore outlook-local
+SubFolders Verbatim
+Path ~/Maildir/outlook/
+Inbox ~/Maildir/outlook/inbox/
+
+Channel outlook
+Master :outlook-remote:
+Slave :outlook-local:
+Patterns "INBOX" "*"
+Create Slave
+Sync All
+Expunge Both
+SyncState *
+MaxMessages 1000
+ExpireUnread no

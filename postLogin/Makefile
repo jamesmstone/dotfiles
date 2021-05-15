@@ -1,6 +1,6 @@
-.PHONY: lastpass keybase pgp ssh .password-store Org email gmail .clean
+.PHONY: lastpass keybase pgp ssh .password-store Org email gmail outlook .clean
 
-all: lastpass keybase pgp ssh .password-store Org email gmail
+all: lastpass keybase pgp ssh .password-store Org email gmail outlook
 
 
 # if this session isn't interactive, then we don't want to allocate a
@@ -39,11 +39,11 @@ ssh: lastpass
 Org .password-store: ssh pgp
 	git clone --depth 1 "git@github.com:jamesmstone/$@" "${HOME}/$@";
 
-email: gmail
+email: gmail outlook
 	mu index
 
-gmail: .password-store
-	mbsync gmail
+outlook gmail: .password-store
+	mbsync $@
 
 
 clean:
