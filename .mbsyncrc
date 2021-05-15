@@ -46,23 +46,23 @@ Inbox ~/Maildir/gmail/inbox
 # gmail-trash gets only the "[Gmail]/Trash" folder and stores it to the local "trash" folder
 
 Channel gmail-inbox
-Master :gmail-remote:
-Slave :gmail-local:
+Far :gmail-remote:
+Near :gmail-local:
 Patterns "INBOX" "Arch*"
 Create Both
 Expunge Both
 SyncState *
 
 Channel gmail-trash
-Master :gmail-remote:"[Gmail]/Bin"
-Slave :gmail-local:trash
+Far :gmail-remote:"[Gmail]/Bin"
+Near :gmail-local:trash
 Create Both
 Expunge Both
 SyncState *
 
 Channel gmail-sent
-Master :gmail-remote:"[Gmail]/Sent Mail"
-Slave :gmail-local:sent
+Far :gmail-remote:"[Gmail]/Sent Mail"
+Near :gmail-local:sent
 Create Both
 Expunge Both
 SyncState *
@@ -103,10 +103,10 @@ Path ~/Maildir/outlook/
 Inbox ~/Maildir/outlook/inbox/
 
 Channel outlook
-Master :outlook-remote:
-Slave :outlook-local:
+Far :outlook-remote:
+Near :outlook-local:
 Patterns "INBOX" "*"
-Create Slave
+Create Near
 Sync All
 Expunge Both
 SyncState *
