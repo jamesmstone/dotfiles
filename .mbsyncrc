@@ -112,3 +112,37 @@ Expunge Both
 SyncState *
 MaxMessages 1000
 ExpireUnread no
+
+
+
+
+# Exchange
+IMAPAccount exchange
+Host outlook.office365.com
+Port 993
+User james.stone@traditionasia.com
+PassCmd "pass show Email/traditionasia.com_app_password_emacs"
+AuthMechs PLAIN
+SSLType IMAPS
+SSLVersions TLSv1.2
+PipelineDepth 1
+
+
+IMAPStore exchange-remote
+Account exchange
+
+MaildirStore exchange-local
+SubFolders Verbatim
+Path ~/Maildir/exchange/
+Inbox ~/Maildir/exchange/inbox/
+
+Channel exchange
+Far :exchange-remote:
+Near :exchange-local:
+Patterns "INBOX" "*"
+Create Near
+Sync All
+Expunge Both
+SyncState *
+MaxMessages 1000
+ExpireUnread no
