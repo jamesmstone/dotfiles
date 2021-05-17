@@ -1,6 +1,7 @@
 .PHONY: lastpass keybase pgp ssh .password-store Org email gmail outlook exchange .clean
 
-all: lastpass keybase pgp ssh .password-store Org # email gmail outlook exchange
+all: lastpass keybase pgp ssh .password-store Org
+# email gmail outlook exchange
 
 
 # if this session isn't interactive, then we don't want to allocate a
