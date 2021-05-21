@@ -1395,31 +1395,31 @@ composer(){
 #
 # Javascript related
 #
-node(){
-    del_stopped node
-        #-v $HOME/.docker/node:/usr/local/lib \
-    docker run -it --rm \
-        -v /etc/localtime:/etc/localtime:ro \
-        -v $(pwd):/app \
-        -w /app \
-        node node "$@"
-}
-npx(){
-    docker run -it --rm \
-        -v /etc/localtime:/etc/localtime:ro \
-         --user="$(id -u):$(id -g)" \
-	-v $(pwd):/app \
-        -w /app \
-        node npx "$@"
-}
-npm(){
-    docker run -it --rm \
-        -v /etc/localtime:/etc/localtime:ro \
-         --user="$(id -u):$(id -g)" \
-	-v $(pwd):/app \
-        -w /app \
-        node npm "$@"
-}
+# node(){
+#     del_stopped node
+# 			#-v $HOME/.docker/node:/usr/local/lib \
+# 				docker run -it --rm \
+# 				-v /etc/localtime:/etc/localtime:ro \
+# 				-v $(pwd):/app \
+# 				-w /app \
+# 				node node "$@"
+# }
+# npx(){
+#     docker run -it --rm \
+#         -v /etc/localtime:/etc/localtime:ro \
+#         --user="$(id -u):$(id -g)" \
+# 		-v $(pwd):/app \
+#         -w /app \
+#         node npx "$@"
+# }
+# npm(){
+#     docker run -it --rm \
+#         -v /etc/localtime:/etc/localtime:ro \
+#         --user="$(id -u):$(id -g)" \
+# 		-v $(pwd):/app \
+#         -w /app \
+#         node npm "$@"
+# }
 tns(){
     del_stopped tns
 
