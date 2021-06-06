@@ -28,6 +28,8 @@ usage(){
 	exit 1
 }
 
+
+SLACK_TOKEN=${SLACK_TOKEN:=$(pass show slack-emacs-token)}
 [ "$SLACK_TOKEN" ] || usage
 
 # Print usage with --help or -h
