@@ -1,6 +1,12 @@
 .PHONY: all bin dotfiles etc emacs mbsync test shellcheck ssh
 
-all: dotfiles etc emacs mbsync
+all: dotfiles bin etc emacs mbsync
+
+bin: ## Installs the bin directory files. add aliases for things in bin
+	for file in $(shell find $(CURDIR)/bin -type f -not -name ".*.swp"); do \
+		f=$$(basename $$file); \
+		sudo ln -sf $$file /usr/local/bin/$$f; \
+	done
 
 pass:
 	git clone --depth 1 git@github.com:jamesmstone/.password-store.git ~/.password-store; \
