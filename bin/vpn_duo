@@ -60,3 +60,12 @@ echo "${cookie}" | curl -b - \
   -H 'Cache-Control: no-cache' \
   --data-raw 'response=sms' \
   -L
+
+
+config="$(mktemp)"
+auth="$(mktemp)"
+trap "rm -f $auth $config" EXIT
+pass show workvpn > "$config"
+pass show gitlab.tradition-private | awk 'BEGIN{print "james.stone"} /password:/{print $2}'> "$auth"
+sudo modprobe tun
+sudo openvpn --config "$config" --auth-user-pass "$auth" --auth-retry interact

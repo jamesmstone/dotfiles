@@ -199,18 +199,6 @@ ll()
 	make -f ~/dotfiles/postLogin/Makefile;
 }
 
-
-work-vpn()
-{
-	local config="$(mktemp)"
-	pass show workvpn > "$config"
-	local auth="$(mktemp)"
-	pass show gitlab.tradition-private | awk 'BEGIN{print "james.stone"} /password:/{print $2}'> "$auth"
-	sudo modprobe tun
-	sudo openvpn --config "$config" --auth-user-pass "$auth" --auth-retry interact
-	rm $auth $config
-}
-
 work-git-clone()
 {
 	git clone git@gitlab.tradition-private:rehub/$1 ~/$1
