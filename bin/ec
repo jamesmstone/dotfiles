@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+set -o pipefail
+
+ec(){
+	emacsclient --create-frame --alternate-editor="" $@
+}
+
+ec "$@"
