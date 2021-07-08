@@ -1,6 +1,6 @@
-.PHONY: lastpass keybase pgp ssh .password-store Org email gmail outlook exchange docker .clean
+.PHONY: lastpass keybase pgp ssh .password-store Org email gmail outlook exchange dockerhub dockertradsgitlab .clean
 
-all: lastpass keybase pgp ssh .password-store Org docker
+all: lastpass keybase pgp ssh .password-store Org dockerhub dockertradsgitlab
 # email gmail outlook exchange
 
 
@@ -40,10 +40,13 @@ ssh: lastpass
 Org .password-store: ssh pgp
 	git clone --depth 1 "git@github.com:jamesmstone/$@" "${HOME}/$@";
 
-docker: .password-store
+dockerhub: .password-store
 	pass show docker.com | \
 		awk '/password/{print $$2}' | \
 		docker login --password-stdin -u $$(pass show docker.com | awk '/username/{print $$2}')
+
+dockertradsgitlab: .password-store
+	pass show gitlab.traditionasia.com-token | docker login --password-stdin --username $$(pass show gitlab.tradition-private | awk '/username/{print $$2}') gitlab-registry.traditionasia.com
 
 email: gmail outlook exchange
 	mu index
@@ -60,3 +63,4 @@ clean:
 	$(lpass) logout -f
 	keybase logout
 	docker logout
+	docker logout gitlab-registry.traditionasia.com
