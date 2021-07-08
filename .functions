@@ -201,7 +201,7 @@ ll()
 
 work-git-clone()
 {
-	git clone git@gitlab.tradition-private:rehub/$1 ~/$1
+	git clone git@gitlab.traditionasia.com:rehub/$1 ~/$1
 }
 
 github-git-clone()
