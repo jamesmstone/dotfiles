@@ -196,7 +196,7 @@ ds(){
 
 ll()
 {
-	make -f ~/dotfiles/postLogin/Makefile;
+	make -C ~/dotfiles/postLogin/;
 }
 
 work-git-clone()

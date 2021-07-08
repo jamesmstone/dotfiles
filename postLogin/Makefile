@@ -1,6 +1,6 @@
-.PHONY: lastpass keybase pgp ssh .password-store Org email gmail outlook exchange dockerhub dockertradsgitlab .clean
+.PHONY: pgp ssh .password-store Org email gmail outlook exchange dockerhub dockertradsgitlab .clean
 
-all: lastpass keybase pgp ssh .password-store Org dockerhub dockertradsgitlab
+all: lastpass pgp ssh .password-store Org dockerhub dockertradsgitlab
 # email gmail outlook exchange
 
 
@@ -20,12 +20,22 @@ lpass = docker run --rm -i $(DOCKER_FLAGS) -v "${HOME}/.lpass:/root/.lpass" --na
 
 lastpass:
 	$(lpass) login --plaintext-key --force "$(email)";
+	touch lastpass
+
+clean-lastpass:
+	$(lpass) logout -f
+	rm -f lastpass
 
 keybase: lastpass
 	$(lpass) show "keybase paperkey" --notes | keybase oneshot -u jamesstone; \
 	$(lpass) show keybase.io --pass | \
 	head -c -2 | \
 	keybase unlock --stdin;
+	touch keybase
+
+clean-keybase:
+	keybase logout
+	rm -f keybase
 
 pgp: keybase
 	keyid = keybase pgp list | awk '/Keybase Key ID:/ {print $4}'
@@ -37,16 +47,28 @@ ssh: lastpass
 	chmod 400 ${HOME}/.ssh/id_rsa;
 	ssh-keygen -y -f ${HOME}/.ssh/id_rsa > ${HOME}/.ssh/id_rsa.pub;
 
+clean-ssh:
+	rm -rf "${HOME}/.ssh/id_rsa"
+
 Org .password-store: ssh pgp
 	git clone --depth 1 "git@github.com:jamesmstone/$@" "${HOME}/$@";
+
+clean-Org clean-.password-store:
+	rm -rf "${HOME}/$@"
 
 dockerhub: .password-store
 	pass show docker.com | \
 		awk '/password/{print $$2}' | \
 		docker login --password-stdin -u $$(pass show docker.com | awk '/username/{print $$2}')
 
+clean-dockerhub:
+	docker logout
+
 dockertradsgitlab: .password-store
 	pass show gitlab.traditionasia.com-token | docker login --password-stdin --username $$(pass show gitlab.tradition-private | awk '/username/{print $$2}') gitlab-registry.traditionasia.com
+
+clean-dockertradsgitlab:
+	docker logout gitlab-registry.traditionasia.com
 
 email: gmail outlook exchange
 	mu index
@@ -55,12 +77,4 @@ exchange outlook gmail: .password-store
 	mbsync $@
 
 
-clean:
-	rm -rf \
-		${HOME}/.ssh/id_rsa \
-		${HOME}/.password-store \
-		${HOME}/Org
-	$(lpass) logout -f
-	keybase logout
-	docker logout
-	docker logout gitlab-registry.traditionasia.com
+clean: clean-lastpass clean-keybase clean-Org clean-.password-store clean-ssh clean-dockertradsgitlab clean-dockerhub
