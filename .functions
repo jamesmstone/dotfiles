@@ -194,9 +194,15 @@ ds(){
 	eval "$@" &>/dev/null &disown;
 }
 
+
+pl()
+{
+	make -C ~/dotfiles/postLogin/ $@
+}
+
 ll()
 {
-	make -C ~/dotfiles/postLogin/;
+	pl lastpass && pl -j4 all
 }
 
 work-git-clone()

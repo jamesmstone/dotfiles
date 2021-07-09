@@ -16,10 +16,11 @@ user = jamesmstone
 domain = hotmail.com
 email = $(user)@$(domain)
 
-lpass = docker run --rm -i $(DOCKER_FLAGS) -v "${HOME}/.lpass:/root/.lpass" --name lpass ${DOCKER_REPO_PREFIX}/lpass
+lpass = docker run --rm -i -v "${HOME}/.lpass:/root/.lpass" ${DOCKER_REPO_PREFIX}/lpass
+lpassTTY = docker run --rm -it -v "${HOME}/.lpass:/root/.lpass" ${DOCKER_REPO_PREFIX}/lpass
 
 lastpass:
-	$(lpass) login --plaintext-key --force "$(email)";
+	$(lpassTTY) login --plaintext-key --force "$(email)";
 	touch lastpass
 
 clean-lastpass:
