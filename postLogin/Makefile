@@ -30,7 +30,7 @@ clean-lastpass:
 keybase: lastpass
 	$(lpass) show "keybase paperkey" --notes | keybase oneshot -u jamesstone; \
 	$(lpass) show keybase.io --pass | \
-	head -c -2 | \
+	head -c -1 | \
 	keybase unlock --stdin;
 	touch keybase
 
