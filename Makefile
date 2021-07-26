@@ -21,7 +21,10 @@ emacs:
 	cd \`find ~/.emacs.d/.local -type d -name 'vterm' -not -path '*evil*'\`/build && \
 	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..  && \
 	make; \
-	sudo apk del alpine-sdk gcc cmake libtool;" \
+	sudo apk del alpine-sdk gcc cmake libtool; \
+	sudo apk add gcc musl-dev && \ 
+	emacs -u `id -un` --batch --eval '(load user-init-file)' -l emacsql-sqlite --eval '(progn (emacsql-sqlite-ensure-binary))' ; \
+	sudo apk del gcc musl-dev " \
 
 mbsync:
 	mkdir -p ~/Maildir/gmail ~/Maildir/outlook ~/Maildir/exchange; \
