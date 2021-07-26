@@ -1,6 +1,6 @@
 .PHONY: pgp ssh .password-store Org email gmail outlook exchange dockerhub dockertradsgitlab .clean
 
-all: lastpass pgp ssh .password-store Org dockerhub dockertradsgitlab
+all: lastpass pgp ssh .password-store Org dockerhub
 # email gmail outlook exchange
 
 
