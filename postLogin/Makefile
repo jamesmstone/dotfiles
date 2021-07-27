@@ -1,6 +1,7 @@
-.PHONY: pgp ssh .password-store Org email gmail outlook exchange dockerhub dockertradsgitlab .clean
+.PHONY: pgp ssh .password-store Org email gmail outlook exchange dockerhub dockertradsgitlab frontend database testing importers .clean
 
 all: lastpass pgp ssh .password-store Org dockerhub
+work: frontend database testing importers dockertradsgitlab
 # email gmail outlook exchange
 
 
@@ -57,6 +58,12 @@ Org .password-store: ssh pgp
 clean-Org clean-.password-store:
 	rm -rf "${HOME}/$@"
 
+frontend database testing importers: ssh pgp
+	git clone --depth 1 "git@gitlab.traditionasia.com:rehub/$@" "${HOME}/$@";
+
+clean-frontend clean-database clean-testing clean-importers:
+	rm -rf "${HOME}/$@"
+
 dockerhub: .password-store
 	pass show docker.com | \
 		awk '/password/{print $$2}' | \
@@ -79,3 +86,4 @@ exchange outlook gmail: .password-store
 
 
 clean: clean-lastpass clean-keybase clean-Org clean-.password-store clean-ssh clean-dockertradsgitlab clean-dockerhub
+clean-work: clean-frontend clean-database clean-testing clean-importers clean-dockertradsgitlab
