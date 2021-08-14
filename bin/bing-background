@@ -1,0 +1,15 @@
+#!/bin/bash
+get_url_latest_image() {
+	base='http://bing.com'
+	url=$(wget -qO- "http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=1&mkt=en-AU" | grep -oPm1 "(?<=<url>)[^<]+")
+	echo "$base$url"
+}
+
+saveLocation='/home/james/Pictures/background.jpg'
+
+if [ -f $saveLocation ]; then
+	feh --bg-scale $saveLocation
+fi
+
+wget -O$saveLocation "$(get_url_latest_image)"
+feh --bg-scale $saveLocation
