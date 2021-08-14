@@ -1,12 +1,13 @@
 #!/bin/bash
 get_url_latest_image() {
 	base='http://bing.com'
-	url=$(wget -qO- "http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=1&mkt=en-AU" | grep -oPm1 "(?<=<url>)[^<]+")
+	url=$(wget -qO- "http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=1&mkt=en-AU" | grep -om1 "<url>.*</url>" | sed -e 's/<url>//'  -e 's/<\/url>*//')
+	#url=$(wget -qO- "http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=1&mkt=en-AU" | grep -oPm1 "(?<=<url>)[^<]+")
 	echo "$base$url"
 }
 
 saveLocation='/home/james/Pictures/background.jpg'
-
+mkdir -p "$(dirname $saveLocation)"
 if [ -f $saveLocation ]; then
 	feh --bg-scale $saveLocation
 fi
