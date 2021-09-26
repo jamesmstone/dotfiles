@@ -89,6 +89,8 @@
 	patchit = "!f() { echo $1.patch | sed s_pull/[0-9]*/commits_commit_ | xargs curl -L | git am --whitespace=fix; }; f"
 	# patchit = "!f() { curl -L $1.patch | git am --whitespace=fix; }; f"
 	patchit-please = "!f() { echo $1.patch | sed s_pull/[0-9]*/commits_commit_ | xargs curl -L | git am -3 --whitespace=fix; }; f"
+	mrc = push -o merge_request.create -o merge_request.target=master
+	mwps = push -o merge_request.create -o merge_request.target=master -o merge_request.merge_when_pipeline_succeeds
 	# patchit-please = "!f() { curl -L $1.patch | git am -3 --whitespace=fix; }; f"
 
 [apply]
