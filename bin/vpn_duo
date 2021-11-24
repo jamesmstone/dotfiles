@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e # Exit with nonzero exit code if anything fails
-#set -x # debug: print commands before they are executed
+# set -x # debug: print commands before they are executed
 set -o pipefail
 set -o errexit
 
-username=$(pass show traditionasia.com | awk '/username: /{print $2}')
+username="james.stone"
 password=$(pass show traditionasia.com | awk '/password: /{print $2}')
 
 cookie=$(curl 'https://devopenvpn.traditionasia.com/?src=connect' \
@@ -66,6 +66,6 @@ config="$(mktemp)"
 auth="$(mktemp)"
 trap "rm -f $auth $config" EXIT
 pass show workvpn > "$config"
-pass show gitlab.tradition-private | awk 'BEGIN{print "james.stone"} /password:/{print $2}'> "$auth"
+pass show traditionasia.com | awk 'BEGIN{print "james.stone"} /password:/{print $2}'> "$auth"
 sudo modprobe tun
 sudo openvpn --config "$config" --auth-user-pass "$auth" --auth-retry interact
