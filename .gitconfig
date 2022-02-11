@@ -41,6 +41,17 @@
 	# Credit an author on the latest commit
 	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
 
+	squash = "!s() { \
+				branch=$(git branch --show-current) ;\
+				git checkout master; \
+				git checkout -b \"${branch}-squash\" ; \
+				git diff \"master...$branch\" | git apply ; \
+				git add . ; \
+				git commit ; \
+				git branch -D \"$branch\" ; \
+				git checkout -b \"$branch\" ;\
+				git branch -D \"${branch}-squash\";  }; s"
+
 	# Interactive rebase with the given number of latest commits
 	reb = "!r() { git rebase -i HEAD~$1; }; r"
 
