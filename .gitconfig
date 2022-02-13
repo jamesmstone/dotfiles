@@ -47,7 +47,7 @@
 				git checkout -b \"${branch}-squash\" ; \
 				git diff \"master...$branch\" | git apply ; \
 				git add . ; \
-				git commit ; \
+				git commit "$@" ; \
 				git branch -D \"$branch\" ; \
 				git checkout -b \"$branch\" ;\
 				git branch -D \"${branch}-squash\";  }; s"
@@ -77,6 +77,8 @@
 	lg = log --color --decorate --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an (%G?)>%Creset' --abbrev-commit
 
 	mdiff = "!f() { git stash | head -1 | grep -q 'No local changes to save'; x=$?; git merge --no-commit $1 &>/dev/null; git add -u &>/dev/null; git diff --staged; git reset --hard &>/dev/null; test $x -ne 0 && git stash pop &>/dev/null; }; f"
+
+	most-edited = !git log --format= --name-only | sort | uniq -c | sort -rg | head -20
 
 	# Codereview aliases
 	change = codereview change
