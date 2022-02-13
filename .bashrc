@@ -116,3 +116,5 @@ alias ssh="gpg-connect-agent updatestartuptty /bye >/dev/null; ssh"
 
 # Add mcfly
 eval "$(mcfly init bash)"
+export MCFLY_KEY_SCHEME=vim
+export MCFLY_INTERFACE_VIEW=BOTTOM
