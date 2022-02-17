@@ -212,3 +212,5 @@
 [credential]
 	helper = store --file ~/.git-credentials
 	helper = cache --timeout 30000
+[pull]
+	rebase = true
