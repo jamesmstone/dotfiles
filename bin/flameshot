@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+set -o pipefail
+
+flameshot(){
+	flatpak run  org.flameshot.Flameshot
+}
+
+flameshot "$@"
