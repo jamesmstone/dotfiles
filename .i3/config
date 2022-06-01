@@ -36,6 +36,7 @@ for_window [class="^Spotify$"] border none
 for_window [class="^Spotify Premium$"] border none
 
 # skype, steam, wine: float Gimp
+# You can use xprop to find the class of a window
 for_window [class="Code"] floating enable
 #for_window [class="Firefox"] floating enable
 for_window [class="Gimp"] floating enable
@@ -108,7 +109,7 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+a focus parent
 
 # focus the child container
-#bindsym $mod+d focus child
+bindsym $mod+d focus child
 
 # switch to workspace
 bindsym $mod+1 workspace 1
