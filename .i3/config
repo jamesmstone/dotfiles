@@ -42,6 +42,7 @@ for_window [class="Gimp"] floating enable
 for_window [class="Keybase"] floating enable
 for_window [class="Neoman"] floating enable
 for_window [class="NES"] floating enable
+for_window [class="Pavucontrol"] floating enable
 for_window [class="Pidgin"] floating enable
 for_window [class="Portal"] floating enable
 for_window [class="RStudio"] floating enable
@@ -200,3 +201,4 @@ exec --no-startup-id bing-background
 # run the merge for good colors
 exec xrdb -merge $HOME/.Xresources
 exec xrdb -merge $HOME/.Xdefaults
+exec pipewire
