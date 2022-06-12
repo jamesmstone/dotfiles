@@ -1,0 +1,5 @@
+
+url="https://jamesmstonenixos.cachix.org/"
+
+curl "$url"$(curl "$url$1.narinfo" |
+	awk '/URL:/{print $2}') | xz --decompress
