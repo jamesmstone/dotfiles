@@ -42,3 +42,5 @@ done
 	-W "$(grep "^Host" ~/.ssh/config | \
 	grep -v "[?*]" | cut -d " " -f2 | \
 	tr ' ' '\n')" scp sftp ssh
+
+if [ -e /home/james/.nix-profile/etc/profile.d/nix.sh ]; then . /home/james/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
