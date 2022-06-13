@@ -2,7 +2,9 @@
 
 
 if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
-    startx
+
+	export XDG_RUNTIME_DIR=~/pulse
+	startx
 fi
 
 
